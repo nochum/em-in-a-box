@@ -1,0 +1,99 @@
+<apex:page controller="WaveDemoUploadController" title="Wave Demo Setup" id="uploadpage">
+    <apex:includeScript value="{!URLFOR($Resource.JSCalendar,'calendar/calendar.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JSCalendar,'calendar/calendar_blue.css')}" />
+    
+    <apex:form id="uploadform">
+        <apex:pageBlock title="Manage SObjects">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!loadSObjects}" value="Load SObjects" />
+                <apex:commandButton action="{!truncateSObjects}" value="Truncate SObjects" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Choose Demo Stories to Load from AWS S3" columns="2">
+                <apex:outputText value="Event Type" style="font-weight:bold;text-decoration: underline;"/>
+                <apex:outputText value="Demo Story File Name"  style="font-weight:bold;text-decoration: underline;"/>
+                
+                <apex:outputText value="Content Transfer With Users"/>
+                <apex:selectList value="{!selectedCtwu}" size="1">
+                    <apex:selectOptions value="{!ctwuList}"/>
+                </apex:selectList>
+                
+                <apex:outputText value="Login With Users"/>
+                <apex:selectList value="{!selectedLwu}" size="1">
+                    <apex:selectOptions value="{!lwuList}"/>
+                </apex:selectList>
+                
+                <apex:outputText value="LoginAs With Users"/>
+                <apex:selectList value="{!selectedLawu}" size="1">
+                    <apex:selectOptions value="{!lawuList}"/>
+                </apex:selectList>
+                
+                <apex:outputText value="Report With Users"/>
+                <apex:selectList value="{!selectedRwu}" size="1">
+                    <apex:selectOptions value="{!rwuList}"/>
+                </apex:selectList>
+                
+                <apex:outputText value="URI With Users"/>
+                <apex:selectList value="{!selectedUwu}" size="1">
+                    <apex:selectOptions value="{!uwuList}"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="Load Wave From SObject">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!loadWave}" value="Load Wave" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Customize Dates" columns="1">
+                <apex:inputText label="Start Date:" id="startdate" value="{!startDateTime}" onmouseover="initializeCalendar(this, '{!$Component.startdate}')"/>
+                <apex:inputText label="End Date: " id="enddate" value="{!endDateTime}" onmouseover="initializeCalendar(this, '{!$Component.enddate}')"/>
+                <apex:inputCheckbox label="Exclude Weekends?" value="{!excludeWeekends}"/>                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <script>
+    function fnSetDateFormat(oDateFormat)
+    {
+        oDateFormat['FullYear'];  //Example = 2007
+        oDateFormat['Year'];   //Example = 07
+        oDateFormat['FullMonthName']; //Example = January
+        oDateFormat['MonthName'];  //Example = Jan
+        oDateFormat['Month'];   //Example = 01
+        oDateFormat['Date'];   //Example = 01
+        oDateFormat['FullDay'];   //Example = Sunday
+        oDateFormat['Day'];    //Example = Sun
+        oDateFormat['Hours'];   //Example = 01
+        oDateFormat['Minutes'];   //Example = 01
+        oDateFormat['Seconds'];   //Example = 01
+        
+        var sDateString;
+        
+        // Use dd/mm/yyyy format
+        // yyyy-MM-dd HH:mm:ss
+        sDateString = oDateFormat['FullYear'] +"-"+ oDateFormat['Month'] +"-"+ oDateFormat['Date'] +
+            " " + oDateFormat['Hours'] + ":" + oDateFormat['Minutes'] + ":" + oDateFormat['Seconds'];
+        return sDateString;
+    }
+    
+    // obj - the object that fired the calendar popup (e.g. an image or button)
+    // eleId - the id of the input element that contains the date.
+    function initializeCalendar(obj, eleId)
+    {
+        var element=document.getElementById(eleId);
+        var params='close=true';
+        if (null!=element)
+        {
+            if (element.value.length>0)
+            {
+                // date is formatted dd/mm/yyyy - pull out the month and year
+                var month=element.value.substr(3,2);
+                var year=element.value.substr(6,4);
+                params+=',month='+month;
+                params+=',year='+year;
+            }
+        }
+        fnInitCalendar(obj, eleId, params);
+    }
+    </script>
+</apex:page>
